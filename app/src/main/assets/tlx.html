@@ -1,0 +1,242 @@
+
+<html>
+<head>
+<!-- 
+
+ Modified page based on keith vertanens TLX
+
+ Copyright 2011 by Keith Vertanen
+ http://www.keithv.com/software/nasa_tlx
+ Cut question indexed at 14 out (for pilot info)
+-->
+<link rel="stylesheet" type="text/css" href="style.css">
+<script src="jquery-1.9.1.js" type="text/javascript"></script>
+<script src="questions.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
+  
+function scroll(element, parent){
+     $(parent).animate({ scrollTop: $(parent).scrollTop() + $(element).offset().top - $(parent).offset().top  }, { duration: 'slow', easing: 'swing'});
+     $('html,body').animate({ scrollTop: $(parent).offset().top }, { duration: 1000, easing: 'swing'});
+}
+
+function resetAllScroll(){
+  //$("*").animate({ scrollTop: 0}, { duration: 'slow', easing: 'swing'});
+}
+
+$.fn.scrollTo = function( target, options, callback ){
+  if(typeof options == 'function' && arguments.length == 2){ callback = options; options = target; }
+  var settings = $.extend({
+    scrollTarget  : target,
+    offsetTop     : 50,
+    duration      : 1000,
+    easing        : 'swing'
+  }, options);
+  return this.each(function(){
+    var scrollPane = $(this);
+    var scrollTarget = (typeof settings.scrollTarget == "number") ? settings.scrollTarget : $(settings.scrollTarget);
+    var scrollY = (typeof scrollTarget == "number") ? scrollTarget : scrollTarget.offset().top + scrollPane.scrollTop() - parseInt(settings.offsetTop);
+    scrollPane.animate({scrollTop : scrollY }, parseInt(settings.duration), settings.easing, function(){
+      if (typeof callback == 'function') { callback.call(this); }
+    });
+  });
+}
+
+// They click on a scale entry
+function scaleClickNew(pageindex, questionindex, val, size)
+{
+	setResult(pageindex, questionindex, val);
+
+	// Turn background color to white for all cells
+	for (i = 0; i < size; i += 1)
+	{
+		var top = "t_" + pageindex + '_' + questionindex + '_' + i;
+		var bottom = "b_" + pageindex + '_' + questionindex + '_' + i;
+		document.getElementById(top).bgColor='#FFFFFF';
+		document.getElementById(bottom).bgColor='#FFFFFF';
+	}
+
+	var top = "t_" + pageindex + '_' + questionindex + '_' + val;
+	var bottom = "b_" + pageindex + '_' + questionindex + '_' + val;
+	document.getElementById(top).bgColor='#AAAAAA';
+	document.getElementById(bottom).bgColor='#AAAAAA';
+	$('body').scrollTo( $('#question_' + pageindex + '_' + (questionindex+1)).offset().top - 20  ); 
+	//scroll( '#question_' + pageindex + '_' + (questionindex+1) , '#question_' + pageindex + '_' + questionindex);
+	
+}
+
+function getScaleHTMLNewer(question, index){
+	var result = "";
+	
+	// Outer table with a column for scale, column for definition
+	result += '<table><tr><td>';
+
+	// Table that generates the scale
+	result += '<table class="scale">';
+
+	// Row 1, just the name of the scale
+	result += '<tr><td colspan="'+ (question.size) + '" class="heading"><p>' + question.scale + '</p></td></tr>';
+
+	// Row 2, the top half of the scale increments, 20 total columns
+	result += '<tr>';
+	var num = 1;
+	for (var i = 0; i < question.size; i += 1)
+	{
+		// if our question isn't a 5 point, and is even, then have tick marks
+		// (this is predominantly for the TLX questions)
+		tdClass = "";
+		if (question.size > 5 && (question.size % 2 == 0)){
+			tdClass = "top" + num;
+		} else {
+			tdClass = "toplikert";
+		}
+		
+		result += '<td id="t_' + question.page + '_' + question.index + '_' + i + '"   class="'+tdClass+'" onMouseOver="scaleClickNew(' + question.page + ', ' + question.index + ', ' + i + ', ' + question.size +  ');"></td>';
+
+		num++;
+		if (num > 2)
+			num = 1;
+	}
+	result += '</tr>';
+
+	// Row 3, bottom half of the scale increments
+	result += '<tr>';
+	for (var i = 0; i < question.size; i += 1)
+	{
+		result += '<td id="b_' + question.page + '_' + question.index + '_' + i + '"   class="bottomlikert" onMouseOver="scaleClickNew(' + question.page + ', ' + question.index + ', ' + i + ', ' + question.size +  ');"></td>';
+	}
+	result += '</tr>';
+
+	
+	// Row 4, left and right of range labels
+	// not quite sure whats going on here, dont have time to check how many columns are actually being created so fuck it!
+	
+
+	result += '</table>'
+	
+	// finally output our labels for either end of the scale in a seperate table
+	range = (question.size == 20) ? question.size-10 : question.size-1;
+	result += '<tr><td>';
+	
+	result += '<table class="scale"><tr class="scales">';
+	result += '<td class="left"><p class="left">' + question.left + '</p></td><td class="right"><p class="right">' + question.right + '</p></td>';
+	result += '</tr></td></table>';
+
+	
+	result += '</tr>';
+	result += '<tr><td><p class="description">' + question.def + '</p></td></tr></td></tr></table>';
+
+	return result;
+}
+
+function onLoad()
+{
+	// android will provide us with our questions
+	Android.onLoad();
+	
+	// or do testing (e.g. in chrome)
+	//setupTestQuestions()
+	//continueLoad();
+}
+
+function continueLoad()
+{
+	lastPage = 1;
+	
+	// set up the test questions
+	//setupTestQuestions();
+	
+	// create our divs for each page ("div_part#")
+	i = 1;
+	
+	while (pages[i] != null){
+		
+		page = document.createElement('div');
+		page.id = "div_part" + i;
+		document.body.appendChild(page);
+		
+		// now add the questions to each div
+		questions = getPage(i);
+		for (j = 1; j != questions.length; j++){
+			
+			// then add the question to the page
+			var questionDiv = document.createElement('div');
+			questionDiv.innerHTML = getScaleHTMLNewer(questions[j], questions[j].index);
+			questionDiv.class = "question";
+			questionDiv.id =  'question_' + i + '_' + j;
+			page.appendChild(questionDiv);
+			
+		}
+		
+		if (i == 1)
+			document.getElementById("div_part"+i).style.display = ''; 
+		else 
+			document.getElementById("div_part"+i).style.display = 'none'; 
+		
+		// then move onto the next page
+		i++;
+	}
+	
+	// finally add our button in to each div for progressing through pages
+	pageCounter = 1;
+	page = document.getElementById('div_part'+pageCounter);
+	while ( page != null) {
+	
+		// window.alert("Setting input for page " + pageCounter );
+		var nextButton=document.createElement('input');
+		nextButton.id = "next";
+		nextButton.type = "button";
+		nextButton.value = "Next Page";
+		
+		nextButton.onclick = createClickHandler(pageCounter, 'div_part'+pageCounter, 'div_part'+(pageCounter+1), false);
+		nextButton.style.height = "3em"; 
+		nextButton.style.width = "100%"; 
+		nextButton.style.fontSize = "20px"
+		
+		if (pageCounter == getLastPage()){
+			nextButton.onclick = createClickHandler(pageCounter, 'div_part'+pageCounter, 'none', true);
+			nextButton.value = "Finish";
+		}
+		
+		page.appendChild( nextButton );
+		pageCounter++;
+		page = document.getElementById('div_part'+pageCounter);
+		// window.alert('div_partwuut'+pageCounter);
+		
+	}
+}
+
+var createClickHandler = function(currentPage, currentDiv, nextDiv, isFinal) {
+  return function() { 
+  		assignQuestions(currentPage, currentDiv, nextDiv, isFinal);
+  };
+}
+    
+function assignQuestions(currentPage, divToHide, divToShow, isFinal){
+	
+	if (!checkResultsForPage(currentPage)){
+		Android.alert("You have not answered all the questions!");
+		return false;
+	}
+		
+	if (!isFinal){
+		document.getElementById(divToHide).style.display = 'none'; 
+		document.getElementById(divToShow).style.display = ''; 
+		$('body').scrollTo( 0  );
+	} else {
+		Android.alert("You answered all the questions! Thanks!");
+	    Android.logSurveyResults(getResults());
+	}
+	return true;
+}
+    
+// -->
+</script>
+
+</head>
+
+
+<body onLoad="onLoad();">
+
+</body>
+
+</html>

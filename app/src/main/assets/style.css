@@ -1,0 +1,135 @@
+table
+    {
+    padding-bottom: 10px;
+    width: 100%;
+    }
+    
+td.bottom
+{
+	width: 0.6cm;
+    height: 0.6cm;
+	border-bottom: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	margin: 0px; 
+	padding: 0px 0px 0px 0px;
+
+}
+
+table.scale
+{
+	margin: 0px;
+        width: 100%;
+	padding: 0px 0px 0px 0px;
+      border-collapse: collapse
+}
+
+td.top1
+{
+	width: 0.8cm;
+      height: 0.6cm;
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	margin: 0px; 
+	padding: 0px 0px 0px 0px;
+}
+td.top2
+{
+	width: 0.8cm;
+      height: 0.4cm;
+	border-top: 1px solid black;
+	border-right: 1px solid black;
+	margin: 0px; 
+	padding: 0px 0px 0px 0px;
+}
+    
+td.toplikert
+    {
+     	width: 70px;
+          height: 0.8cm;
+        border-top: 1px solid black;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+        margin: 0px; 
+        padding: 0px 0px 0px 0px;   
+    }
+    
+td.bottomlikert
+{
+	width: 70px;
+      height: 0.8cm;
+	border-bottom: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	margin: 0px; 
+	padding: 0px 0px 0px 0px;
+
+}
+    
+td.heading
+{
+	font: Bold 16px Arial, Helvetica, sans-serif;
+	text-align: center;
+}
+td.left
+{
+	font: 14px Arial, Helvetica, sans-serif;
+}
+td.right
+{
+	font: 14px Arial, Helvetica, sans-serif;
+	text-align: right;
+}
+
+tr.def
+{
+	width: 20cm;	
+	padding: 0px 0px 0px 20px;
+	font: Bold 14px Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+   
+p.descriptiontlx
+{
+	font: Bold Italic 14px Arial, Helvetica, sans-serif;
+	padding-bottom: 10px;
+} 
+p.description
+    {
+	font:  16px Arial, Helvetica, sans-serif;
+		border-bottom: 4px solid #FF6633;
+		padding-bottom: 10px;
+    }
+    
+	
+tr.scales {
+	height:20px;overflow-y:hidden;
+}
+
+
+
+p.left
+    {
+    text-align: left;
+    width: 100%;
+    }
+	
+p.right
+    {
+	text-align: right;
+    width: 100%;
+    }
+    
+.likert ul
+{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.likert li
+{
+    float: left;
+    text-align: left;
+    list-style-type: none;
+}
